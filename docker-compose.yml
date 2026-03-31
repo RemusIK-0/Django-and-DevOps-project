@@ -1,9 +1,28 @@
+# Postgres services
 services:
+  # Postgres database container
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+    # Used environmental variables for security
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+  # Django app
   web:
     build: .
+    depends_on:
+      - db
     ports:
       - "8000-8000"
     env_file:
       - .env
     volumes:
       - .:/app
+
+# Saved data
+volumes:
+  postgres_data:
