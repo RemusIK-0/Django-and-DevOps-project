@@ -16,18 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.http import JsonResponse
-from cloud_manager import get_s3_buckets
-
-def cloud_status_view(request):
-    
-    buckets = get_s3_buckets()
-    return JsonResponse({
-        "status": "Conectat la AWS",
-        "s3_buckets": buckets
-    })
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('cloud-status/', cloud_status_view),
+    path('dashboard/', views.dashboard_view, name='dashboard'),
 ]

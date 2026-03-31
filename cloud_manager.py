@@ -23,3 +23,28 @@ def get_s3_buckets():
         return ["Eroare: Cheile AWS nu sunt configurate corect."]
     except Exception as e:
         return [f"A aparut o eroare: {str(e)}"]
+    
+def get_ec2_instances():
+    try:
+        ec2 = boto3.client(
+            'ec2',
+            aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+            region_name=os.getenv('AWS_REGION')
+        )
+        
+        response = ec2.describe_instances()
+        instances = []
+        
+        for reservation in response['Reservations']:
+            for instance in reservation['Instances']:
+                instances.append({
+                    'id': instance['InstanceId'],
+                    'type': instance['InstanceType'],
+                    'state': instance['State']['Name'],
+                    # Căutăm tag-ul 'Name' dacă există
+                    'name': next((tag['Value'] for tag in instance.get('Tags', []) if tag['Key'] == 'Name'), "Fără nume")
+                })
+        return instances
+    except Exception as e:
+        return [f"Eroare EC2: {str(e)}"]
