@@ -1,5 +1,6 @@
 import boto3
 import os
+import datetime
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 def get_s3_buckets():
@@ -48,3 +49,31 @@ def get_ec2_instances():
         return instances
     except Exception as e:
         return [f"Eroare EC2: {str(e)}"]
+    
+def get_aws_costs():
+    try:
+        ce = boto3.client(
+            'ce',
+            aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+            aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+            region_name='us-east-1' 
+        )
+
+        today = datetime.date.today()
+        start_of_month = today.replace(day=1).isoformat()
+        end_of_today = today.isoformat()
+        
+        if start_of_month == end_of_today:
+            start_of_month = (today - datetime.timedelta(days=1)).replace(day=1).isoformat()
+
+        response = ce.get_cost_and_usage(
+            TimePeriod={'Start': start_of_month, 'End': end_of_today},
+            Granularity='MONTHLY',
+            Metrics=['UnblendedCosts'],
+        )
+
+        amount = float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
+        return amount
+    except Exception as e:
+        print(f"Eroare Cost Explorer: {e}")
+        return 0.0

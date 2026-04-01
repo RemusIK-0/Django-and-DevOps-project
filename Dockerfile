@@ -11,6 +11,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     gcc \
+    gettext \
     && rm -rf var/lib/apt/lists/*
 
 # Copy only requirements.txt to use Docker cache
@@ -26,7 +27,10 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 
 # Install runtime libraries for Postgres
-RUN apt-get update && apt-get install -y libpq5 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    gettext \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy everithing else
 COPY . .

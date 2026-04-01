@@ -10,10 +10,25 @@
         .navbar { background-color: #232f3e; } 
     </style>
 
+{% load i18n %}
+
 </head>
 <body>
 
 <nav class="navbar navbar-dark mb-4">
+    <form action="{% url 'set_language' %}" method="post" class="d-flex">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}">
+        <select name="language" onchange="this.form.submit()" class="form-select form-select-sm">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                    {{ lang.1 }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
     <div class="container">
         <span class="navbar-brand mb-0 h1">🚀 DevOps Cloud Manager</span>
     </div>
@@ -24,7 +39,7 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm border-0">
                 <div class="card-body">
-                    <h5 class="card-title text-muted">Status Sistem</h5>
+                    <h5 class="card-title text-muted">{% trans "Status Sistem" %}</h5>
                     <p class="card-text">
                         {% if db_status %}
                             <span class="badge bg-success">Online</span> (PostgreSQL Connected)
@@ -39,14 +54,14 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0">Resurse AWS S3</h5>
+                    <h5 class="mb-0">{% trans "AWS S3 Resources" %}</h5>
                 </div>
                 <div class="card-body">
                     <table class="table table-hover">
                         <thead class="table-light">
                             <tr>
-                                <th>Nume Bucket</th>
-                                <th>Status</th>
+                                <th>{% trans "Bucket Name" %}</th>
+                                <th>{% trans "Status" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,7 +72,7 @@
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="2" class="text-center">Nu s-au găsit bucket-uri.</td>
+                                <td colspan="2" class="text-center">{% trans "No buckets found." %}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -69,19 +84,34 @@
 </div>   
 
 <div class="row mt-4">
+
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title text-muted">{% trans "Estimated Costs (Current Month)" %}</h5>
+                <h3 class="fw-bold">${{ cost_usd|stringformat:".2f" }}</h3>
+                <p class="text-muted">
+                    {{ cost_ron|stringformat:".2f" }} RON | 
+                    {{ cost_eur|stringformat:".2f" }} EUR
+                </p>
+                <small class="text-info">{% trans "BNR Exchange Rate: 1 USD =" %} {{ rates.USD }} {{ rates.EUR }}</small>
+            </div>
+        </div>
+    </div>
+
     <div class="col-md-12">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white">
-                <h5 class="mb-0">Instanțe AWS EC2 (Servere)</h5>
+                <h5 class="mb-0">{% trans "AWS EC2 Instances (Servers)" %}</h5>
             </div>
             <div class="card-body">
                 <table class="table table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>Nume</th>
-                            <th>ID Instanță</th>
-                            <th>Tip</th>
-                            <th>Status</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Instance ID" %}</th>
+                            <th>{% trans "Type" %}</th>
+                            <th>{% trans "Status" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -98,7 +128,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="4" class="text-center">Nu ai servere EC2 pornite în această regiune.</td>
+                            <td colspan="4" class="text-center">{% trans "You have no EC2 instances running in this region." %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
