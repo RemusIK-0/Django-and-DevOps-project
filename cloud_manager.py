@@ -69,7 +69,7 @@ def get_aws_costs():
         response = ce.get_cost_and_usage(
             TimePeriod={'Start': start_of_month, 'End': end_of_today},
             Granularity='MONTHLY',
-            Metrics=['UnblendedCosts'],
+            Metrics=['UnblendedCost'],
         )
 
         amount = float(response['ResultsByTime'][0]['Total']['UnblendedCost']['Amount'])
@@ -77,3 +77,34 @@ def get_aws_costs():
     except Exception as e:
         print(f"Eroare Cost Explorer: {e}")
         return 0.0
+    
+def get_detailed_costs():
+    client = boto3.client('ce', region_name='us-east-1')
+
+    now = datetime.datetime.now()
+    start_date = now.strftime('%Y-%m-01')
+    end_date = now.strftime('%Y-%m-%d')
+
+    response = client.get_cost_and_usage(
+    TimePeriod={'Start': start_date, 'End': end_date},
+    Granularity='MONTHLY',
+    Metrics=['UnblendedCost'],
+    GroupBy=[
+        {
+            'Type': 'DIMENSION',
+            'Key': 'SERVICE'
+        }
+    ])
+
+    detailed_logs = []
+    for group in response['ResultsByTime'][0]['Groups']:
+        service_name = group['Keys'][0]
+        amount = float(group['Metrics']['UnblendedCost']['Amount'])
+        if amount > 0:
+            detailed_logs.append({
+                'service': service_name,
+                'amount': amount,
+                'date': end_date
+            })
+    return detailed_logs
+        
