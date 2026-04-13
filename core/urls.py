@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('', views.home_view, name='home')
 ]

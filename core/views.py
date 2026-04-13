@@ -38,3 +38,20 @@ def dashboard_view(request):
         'rates': rates
     })
 
+def home_view(request):
+    db_conn = True
+    try:
+        connections['default'].cursor()
+    except OperationalError:
+        db_conn = False
+        
+    cost_usd = get_aws_costs()
+    rates = get_bnr_rates()
+    cost_ron = cost_usd * rates.get('USD', 4.6)
+
+    return render(request, 'home.html', {
+        'db_status': db_conn,
+        'cost_usd': cost_usd,
+        'cost_ron': cost_ron,
+        'rates': rates
+    })

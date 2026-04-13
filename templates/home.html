@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold">DevOps Cloud Manager</h1>
+    <p class="lead text-muted">{% trans "Welcome to your AWS control center." %}</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow border-0 h-100 py-3">
+            <div class="card-body text-center">
+                <h6 class="text-uppercase text-muted small fw-bold">{% trans "System Status" %}</h6>
+                <div class="mt-3">
+                    {% if db_status %}
+                        <span class="badge bg-success p-2 px-3">
+                            <i class="bi bi-check-circle me-1"></i> ONLINE
+                        </span>
+                        <p class="small text-muted mt-2">PostgreSQL Connected</p>
+                    {% else %}
+                        <span class="badge bg-danger p-2 px-3">OFFLINE</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow border-0 h-100 py-3">
+            <div class="card-body text-center">
+                <h6 class="text-uppercase text-muted small fw-bold">{% trans "Estimated Cost" %}</h6>
+                <h2 class="fw-bold mt-2">${{ cost_usd|stringformat:".2f" }}</h2>
+                <p class="text-info mb-0">{{ cost_ron|stringformat:".2f" }} RON</p>
+                <small class="text-muted" style="font-size: 0.7rem;">
+                    BNR: 1 USD = {{ rates.USD }} RON
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg px-5 shadow-sm">
+        {% trans "Go to Dashboard" %} <i class="bi bi-arrow-right ms-2"></i>
+    </a>
+</div>
+{% endblock %}
