@@ -1,6 +1,0 @@
-when using ".\venv\Scripts\activate", if there are any similar error with:
-
-"File cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170."
-
-Use:
-"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser"
